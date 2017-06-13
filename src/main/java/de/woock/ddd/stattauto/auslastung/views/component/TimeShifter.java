@@ -18,7 +18,7 @@ public class TimeShifter extends Slider {
 		setPadding(new Insets(0, 300, 0, 350));
 		setMin(0);
 		setMax(3);
-		setValue(1);
+		setValue(3);
         setMinorTickCount(0);
         setMajorTickUnit(1);
         setSnapToTicks(true);
