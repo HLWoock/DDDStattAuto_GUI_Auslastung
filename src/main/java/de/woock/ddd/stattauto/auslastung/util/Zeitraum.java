@@ -3,7 +3,7 @@ package de.woock.ddd.stattauto.auslastung.util;
 import java.io.Serializable;
 import java.time.Instant;
 import java.time.LocalDateTime;
-import java.util.TimeZone;
+import java.time.ZoneOffset;
 
 @SuppressWarnings("serial")
 public class Zeitraum implements Serializable {
@@ -15,8 +15,8 @@ public class Zeitraum implements Serializable {
 	}
 	
 	public Zeitraum(Long von, Long bis) {
-		this.von = LocalDateTime.ofInstant(Instant.ofEpochSecond(von), TimeZone.getDefault().toZoneId());;
-		this.bis = LocalDateTime.ofInstant(Instant.ofEpochSecond(bis), TimeZone.getDefault().toZoneId());;
+		this.von = LocalDateTime.ofInstant(Instant.ofEpochSecond(von), ZoneOffset.UTC);
+		this.bis = LocalDateTime.ofInstant(Instant.ofEpochSecond(bis), ZoneOffset.UTC);
 	}
 	
 	@Override
