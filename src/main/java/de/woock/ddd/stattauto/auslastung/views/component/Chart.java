@@ -2,19 +2,17 @@ package de.woock.ddd.stattauto.auslastung.views.component;
 
 import java.io.File;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.Month;
 import java.time.Year;
 import java.time.YearMonth;
-import java.time.ZoneOffset;
 import java.time.format.TextStyle;
 import java.time.temporal.Temporal;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+
+import org.springframework.stereotype.Component;
 
 import de.woock.ddd.stattauto.auslastung.util.Week;
 import de.woock.ddd.stattauto.auslastung.util.Zeitraum;
@@ -28,6 +26,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.TextAlignment;
 
+@Component
 public class Chart extends Canvas {
 	
 	private SelectionPanel            selectionPanel;
@@ -64,7 +63,6 @@ public class Chart extends Canvas {
 	
 	public void drawChartContent() {
 		drawScale();
-		loadBelegungenFromServer();
 	}
 
 	public void setDate(Map<ScaleUnit, Temporal> date) {
@@ -74,7 +72,6 @@ public class Chart extends Canvas {
 	public void update() {
 		auswahlMap = selectionPanel.getAuswahlMap();
 		drawScale();
-		loadBelegungenFromServer();
 	}
 
 	public void drawBelegungen(List<List<Zeitraum>> belegungen) {
@@ -124,54 +121,6 @@ public class Chart extends Canvas {
 	    	int xDist = metric.get(scaleUnit);
 	    	gc.fillRect(200 + (von-1) * xDist, 129 + (i-1) * 40, (bis-von) * xDist, 10);
 	    } 
-	}
-
-	private void loadBelegungenFromServer() {
-		List<Zeitraum> erstesAuto = new ArrayList<>();
-		erstesAuto.add(new Zeitraum(LocalDateTime.of(2017, Month.JUNE,  1,  8, 30).toEpochSecond(ZoneOffset.UTC), 
-                                    LocalDateTime.of(2017, Month.JUNE,  3, 19, 45).toEpochSecond(ZoneOffset.UTC)));
-		erstesAuto.add(new Zeitraum(LocalDateTime.of(2017, Month.JUNE,  5,  8, 30).toEpochSecond(ZoneOffset.UTC), 
-                                    LocalDateTime.of(2017, Month.JUNE,  7, 19, 45).toEpochSecond(ZoneOffset.UTC)));
-		erstesAuto.add(new Zeitraum(LocalDateTime.of(2017, Month.JUNE, 12,  8, 30).toEpochSecond(ZoneOffset.UTC), 
-                                    LocalDateTime.of(2017, Month.JUNE, 13, 19, 45).toEpochSecond(ZoneOffset.UTC)));
-		
-		List<Zeitraum> zweitesAuto = new ArrayList<>();
-		zweitesAuto.add(new Zeitraum(LocalDateTime.of(2017, Month.JUNE,  7,  8, 30).toEpochSecond(ZoneOffset.UTC), 
-                                     LocalDateTime.of(2017, Month.JUNE,  8, 19, 45).toEpochSecond(ZoneOffset.UTC)));
-		zweitesAuto.add(new Zeitraum(LocalDateTime.of(2017, Month.JUNE,  9,  8, 30).toEpochSecond(ZoneOffset.UTC), 
-                                     LocalDateTime.of(2017, Month.JUNE, 10, 19, 45).toEpochSecond(ZoneOffset.UTC)));
-		zweitesAuto.add(new Zeitraum(LocalDateTime.of(2017, Month.JUNE, 15,  8, 30).toEpochSecond(ZoneOffset.UTC), 
-                                     LocalDateTime.of(2017, Month.JUNE, 17, 19, 45).toEpochSecond(ZoneOffset.UTC)));
-		
-		List<Zeitraum> drittesAuto = new ArrayList<>();
-		drittesAuto.add(new Zeitraum(LocalDateTime.of(2017, Month.JUNE,  5,  7, 00).toEpochSecond(ZoneOffset.UTC), 
-                                     LocalDateTime.of(2017, Month.JUNE, 10, 19, 45).toEpochSecond(ZoneOffset.UTC)));
-		drittesAuto.add(new Zeitraum(LocalDateTime.of(2017, Month.JUNE, 15,  8, 30).toEpochSecond(ZoneOffset.UTC), 
-                                     LocalDateTime.of(2017, Month.JUNE, 20, 19, 45).toEpochSecond(ZoneOffset.UTC)));
-		
-		List<Zeitraum> viertesAuto = new ArrayList<>();
-		viertesAuto.add(new Zeitraum(LocalDateTime.of(2017, Month.JUNE,  1,  8, 30).toEpochSecond(ZoneOffset.UTC), 
-                                     LocalDateTime.of(2017, Month.JUNE,  2, 19, 45).toEpochSecond(ZoneOffset.UTC)));
-		viertesAuto.add(new Zeitraum(LocalDateTime.of(2017, Month.JUNE,  3,  8, 30).toEpochSecond(ZoneOffset.UTC), 
-                                     LocalDateTime.of(2017, Month.JUNE,  4, 19, 45).toEpochSecond(ZoneOffset.UTC)));
-		viertesAuto.add(new Zeitraum(LocalDateTime.of(2017, Month.JUNE,  5,  8, 30).toEpochSecond(ZoneOffset.UTC), 
-                                     LocalDateTime.of(2017, Month.JUNE,  6, 19, 45).toEpochSecond(ZoneOffset.UTC)));
-		viertesAuto.add(new Zeitraum(LocalDateTime.of(2017, Month.JUNE,  9,  8, 30).toEpochSecond(ZoneOffset.UTC), 
-                                     LocalDateTime.of(2017, Month.JUNE, 11, 19, 45).toEpochSecond(ZoneOffset.UTC)));
-		viertesAuto.add(new Zeitraum(LocalDateTime.of(2017, Month.JUNE, 12,  8, 30).toEpochSecond(ZoneOffset.UTC), 
-		                             LocalDateTime.of(2017, Month.JUNE, 17, 19, 45).toEpochSecond(ZoneOffset.UTC)));
-		viertesAuto.add(new Zeitraum(LocalDateTime.of(2017, Month.JUNE, 22,  8, 30).toEpochSecond(ZoneOffset.UTC), 
-                                     LocalDateTime.of(2017, Month.JUNE, 22,  9, 45).toEpochSecond(ZoneOffset.UTC)));
-		viertesAuto.add(new Zeitraum(LocalDateTime.of(2017, Month.JUNE, 22, 14, 30).toEpochSecond(ZoneOffset.UTC), 
-                                     LocalDateTime.of(2017, Month.JUNE, 22, 15, 30).toEpochSecond(ZoneOffset.UTC)));
-
-		
-		List<List<Zeitraum>> alleBelegungen = new ArrayList<>();
-		alleBelegungen.add(erstesAuto);
-		alleBelegungen.add(zweitesAuto);
-		alleBelegungen.add(drittesAuto);
-		alleBelegungen.add(viertesAuto);
-		drawBelegungen(alleBelegungen);
 	}
 
 	private void setStyleBelegung() {
@@ -315,5 +264,8 @@ public class Chart extends Canvas {
 
 		public Week getKalenderwoche() {
 			return (Week) selectionPanel.getAuswahlMap().get(ScaleUnit.Woche);
+		}
+
+		public void neueDatenAnzeigen(String kuerzel) {
 		}
 }

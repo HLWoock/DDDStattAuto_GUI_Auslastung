@@ -1,7 +1,5 @@
 package de.woock.ddd.stattauto.auslastung;
 
-import javax.annotation.PostConstruct;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -32,11 +30,6 @@ public class DddStattAutoGuiAuslastungsManagementApplication extends Application
 		launch(args);
 	}
 	
-	@PostConstruct
-	public void holeZeitraum() {
-		System.out.println(service.holeZeitraum());
-	}
-	
 	@Override
 	public void start(Stage primaryStage) throws Exception {
 		Scene scene = new Scene(new Group());
@@ -54,7 +47,6 @@ public class DddStattAutoGuiAuslastungsManagementApplication extends Application
 	@Override
 	public void init() throws Exception {
 		ConfigurableApplicationContext context = new SpringApplicationBuilder(DddStattAutoGuiAuslastungsManagementApplication.class).headless(false)
-                                                                                                                                    .web(false)
                                                                                                                                     .run("");
 		auslastungsView = context.getBean(AuslastungsView.class);
 	}

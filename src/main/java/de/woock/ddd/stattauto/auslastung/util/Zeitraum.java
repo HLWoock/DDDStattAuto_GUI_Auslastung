@@ -15,8 +15,8 @@ public class Zeitraum implements Serializable {
 	}
 	
 	public Zeitraum(Long von, Long bis) {
-		this.von = LocalDateTime.ofInstant(Instant.ofEpochSecond(von), ZoneOffset.UTC);
-		this.bis = LocalDateTime.ofInstant(Instant.ofEpochSecond(bis), ZoneOffset.UTC);
+		this.von = Instant.ofEpochMilli(von).atZone(java.time.ZoneId.systemDefault()).toLocalDateTime();
+		this.bis = Instant.ofEpochMilli(bis).atZone(java.time.ZoneId.systemDefault()).toLocalDateTime();
 	}
 	
 	@Override

@@ -3,20 +3,17 @@ package de.woock.ddd.stattauto.auslastung.views.component;
 import java.time.LocalDate;
 import java.util.Map;
 
+import org.springframework.stereotype.Component;
+
 import de.woock.ddd.stattauto.auslastung.views.utils.ScaleUnit;
 import javafx.geometry.Insets;
 import javafx.scene.control.Slider;
 
+@Component
 public class TimeSlider extends Slider {
 	
 	private Chart           chart;
 	private SelectionPanel  selectionPanel;
-
-	public void setScale(Map<ScaleUnit, LocalDate> map) {
-		Double value = getLabelFormatter().fromString(((ScaleUnit) map.keySet().toArray()[0]).name());
-		setValue(value);
-		setScaleOnChart(value);
-	}
 
 	public TimeSlider(Chart chart, SelectionPanel  selectionPanel) {
 		super(0, 3, 0);
@@ -24,8 +21,14 @@ public class TimeSlider extends Slider {
 		this.selectionPanel = selectionPanel;
 		
 		configSlider();
-        setLabelFormatter(new TimeSliderStringConverter());
+	    setLabelFormatter(new TimeSliderStringConverter());
 		valueProperty().addListener( (ov, old_val, new_val) -> {setScaleOnChart(new_val);});
+	}
+
+	public void setScale(Map<ScaleUnit, LocalDate> map) {
+		Double value = getLabelFormatter().fromString(((ScaleUnit) map.keySet().toArray()[0]).name());
+		setValue(value);
+		setScaleOnChart(value);
 	}
 
 	private void configSlider() {

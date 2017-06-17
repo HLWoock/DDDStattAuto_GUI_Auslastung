@@ -2,11 +2,13 @@ package de.woock.ddd.stattauto.auslastung.views.component;
 
 
 
+import java.text.Collator;
 import java.time.LocalDate;
 import java.time.Year;
 import java.time.YearMonth;
 import java.time.temporal.Temporal;
 import java.time.temporal.WeekFields;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -14,10 +16,16 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import org.springframework.stereotype.Component;
+
+import de.woock.ddd.stattauto.auslastung.service.AuslastungsService;
 import de.woock.ddd.stattauto.auslastung.util.Week;
 import de.woock.ddd.stattauto.auslastung.views.utils.ScaleUnit;
+import de.woock.ddd.stattauto.server.fuhrpark.entity.Auswahlkriterien;
+import de.woock.ddd.stattauto.server.reservierung.entity.Zeitraum;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.collections.transformation.SortedList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
@@ -29,13 +37,18 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 
+@Component
 public class SelectionPanel  extends GridPane {
+	private AuslastungsService service;
 	
+	private ComboBox<String>   cbKuerzel;
+	private TextField          txStadt, txStadtteil, txStandort;
 	private Label              lbJahr, lbMonat, lbWoche, lbTag;
 	private ComboBox<String>   cbJahr, cbMonat;
 	private ComboBox<Integer>  cbWoche, cbTag;
 
-	public SelectionPanel(Chart chart) {
+	public SelectionPanel(Chart chart, AuslastungsService auslastungsService) {
+		this.service = auslastungsService;
 		setAlignment(Pos.CENTER);
 		setHgap(10);
 		setVgap(10);
@@ -45,10 +58,10 @@ public class SelectionPanel  extends GridPane {
 		scenetitle.setFont(Font.font("Tahoma", FontWeight.NORMAL, 20));
 		add(scenetitle, 0, 0, 8, 1);
 
-		Label lbName      = new Label("Stationskürzel:"); add(lbName     , 0, 1); TextField txName      = new TextField(); add(txName     ,  1, 1);
-		Label lbStadt     = new Label("Stadt:")         ; add(lbStadt    , 3, 1); TextField txStadt     = new TextField(); add(txStadt    ,  4, 1);
-		Label lbStadtteil = new Label("Stadtteil:")     ; add(lbStadtteil, 6, 1); TextField txStadtteil = new TextField(); add(txStadtteil,  7, 1);
-		Label lbStandort  = new Label("Standort:")      ; add(lbStandort , 9, 1); TextField txStandort  = new TextField(); add(txStandort , 10, 1);
+		Label lbKuerzel   = new Label("Stationskürzel:"); add(lbKuerzel  , 0, 1); cbKuerzel   = new ComboBox<>(); add(cbKuerzel  ,  1, 1);
+		Label lbStadt     = new Label("Stadt:")         ; add(lbStadt    , 3, 1); txStadt     = new TextField() ; add(txStadt    ,  4, 1);
+		Label lbStadtteil = new Label("Stadtteil:")     ; add(lbStadtteil, 6, 1); txStadtteil = new TextField() ; add(txStadtteil,  7, 1);
+		Label lbStandort  = new Label("Standort:")      ; add(lbStandort , 9, 1); txStandort  = new TextField() ; add(txStandort , 10, 1);
 
 		ObservableList<String> olJahr  = FXCollections.observableArrayList("2016", "2017", "2018", "2019", "2020");		
 		ObservableList<String> olMonat = FXCollections.observableArrayList("Jan", "Feb", "Mrz", "Apr", "Mai", "Jun", "Jul", "Aug", "Spt", "Okt", "Nov", "Dez");
@@ -103,6 +116,31 @@ public class SelectionPanel  extends GridPane {
 	}
 
 	private void setActionListener(Chart chart) {
+		cbKuerzel.setOnAction(v-> {
+			String kuerzel = cbKuerzel.getSelectionModel().getSelectedItem();
+			Auswahlkriterien auswahl = service.holeStationAuswahlkriterienFuerKuerzel(kuerzel);
+			txStadt    .setText(auswahl.getStadt());
+			txStadtteil.setText(auswahl.getStadtteil());
+			txStandort .setText(auswahl.getStandort());
+			
+			if (kuerzel != null && !kuerzel.isEmpty()) {
+				List<Integer> fahrzeugIds = service.fahrzeugIdsFuerStationsKuerzel(kuerzel);
+				System.out.println(fahrzeugIds);
+				List<List<de.woock.ddd.stattauto.auslastung.util.Zeitraum>> alleBelegungen = new ArrayList<>();
+				for (Integer fahrzeugId : fahrzeugIds) {
+					List<de.woock.ddd.stattauto.auslastung.util.Zeitraum> belegungen = new ArrayList<>();
+					List<Zeitraum> zeitraeume = service.reservierungenFuerId(fahrzeugId);
+					for (Zeitraum zeitraum : zeitraeume) {
+						belegungen.add(new de.woock.ddd.stattauto.auslastung.util.Zeitraum(zeitraum.getStartZeit(), zeitraum.getEndZeit()));
+					}
+					alleBelegungen.add(belegungen);
+				}
+				chart.drawBelegungen(alleBelegungen);
+				
+			}
+			
+		});
+		
 		cbJahr .setOnAction(v -> {fillComboBoxes(); chart.update();});
 		cbMonat.setOnAction(v -> {fillComboBoxes(); chart.update();});
 		cbWoche.setOnAction(v -> {cbTag.getSelectionModel()  .clearSelection(); chart.update();});
@@ -110,6 +148,11 @@ public class SelectionPanel  extends GridPane {
 	}
 
 	private void fillCBAndSetActualDate() {
+		List<String> kuerzel = service.holeAlleStationsKuerzel();
+		final ObservableList<String> comboBoxItems = FXCollections.observableArrayList();
+		cbKuerzel.setItems(new SortedList<String>(comboBoxItems, Collator.getInstance()));
+		comboBoxItems.addAll(kuerzel);
+		
 		LocalDate now = LocalDate.now();
 		cbJahr.getSelectionModel() .select(String.valueOf(now.getYear()));
 		cbMonat.getSelectionModel().select(now.getMonth().getValue() - 1);
