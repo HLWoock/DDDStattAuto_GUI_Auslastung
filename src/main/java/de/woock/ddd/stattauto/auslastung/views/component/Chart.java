@@ -15,7 +15,7 @@ import java.util.Map;
 import org.springframework.stereotype.Component;
 
 import de.woock.ddd.stattauto.auslastung.util.Week;
-import de.woock.ddd.stattauto.auslastung.util.Zeitraum;
+import de.woock.ddd.stattauto.auslastung.util.Belegung;
 import de.woock.ddd.stattauto.auslastung.views.utils.DateToLength;
 import de.woock.ddd.stattauto.auslastung.views.utils.ScaleUnit;
 import de.woock.ddd.stattauto.auslastung.views.utils.Scales;
@@ -39,7 +39,7 @@ public class Chart extends Canvas {
 	
 	private ScaleUnit               scaleUnit = ScaleUnit.Tag;
 	private Map<ScaleUnit, Integer> metric = new HashMap<>();
-	private List<List<Zeitraum>>    drawnBelegungen;
+	private List<List<Belegung>>    drawnBelegungen;
 
 	public Chart() {
 		super(1480, 320);
@@ -74,16 +74,16 @@ public class Chart extends Canvas {
 		drawScale();
 	}
 
-	public void drawBelegungen(List<List<Zeitraum>> belegungen) {
+	public void drawBelegungen(List<List<Belegung>> belegungen) {
 		if (belegungen != null) {
 			auswahlMap = selectionPanel.getAuswahlMap();
 			drawnBelegungen = belegungen;
 			
 			int fahrzeugNr = 0;
-			for (List<Zeitraum> einzelbeleglngen : belegungen) {
+			for (List<Belegung> einzelbeleglngen : belegungen) {
 				fahrzeugNr++;
 				clearField(fahrzeugNr);
-				for (Zeitraum zeitraum : einzelbeleglngen) {
+				for (Belegung zeitraum : einzelbeleglngen) {
 					if (scaleUnit != null) {
 						switch (scaleUnit) {
 						case Tag: 

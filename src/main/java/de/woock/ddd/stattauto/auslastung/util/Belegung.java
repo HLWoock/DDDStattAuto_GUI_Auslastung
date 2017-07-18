@@ -6,15 +6,15 @@ import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 
 @SuppressWarnings("serial")
-public class Zeitraum implements Serializable {
+public class Belegung implements Serializable {
 
 	public LocalDateTime von;
 	public LocalDateTime bis;
 	
-	public Zeitraum() {
+	public Belegung() {
 	}
 	
-	public Zeitraum(Long von, Long bis) {
+	public Belegung(Long von, Long bis) {
 		this.von = Instant.ofEpochMilli(von).atZone(java.time.ZoneId.systemDefault()).toLocalDateTime();
 		this.bis = Instant.ofEpochMilli(bis).atZone(java.time.ZoneId.systemDefault()).toLocalDateTime();
 	}

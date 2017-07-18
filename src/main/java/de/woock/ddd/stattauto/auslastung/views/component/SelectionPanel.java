@@ -19,6 +19,7 @@ import java.util.stream.IntStream;
 import org.springframework.stereotype.Component;
 
 import de.woock.ddd.stattauto.auslastung.service.AuslastungsService;
+import de.woock.ddd.stattauto.auslastung.util.Belegung;
 import de.woock.ddd.stattauto.auslastung.util.Week;
 import de.woock.ddd.stattauto.auslastung.views.utils.ScaleUnit;
 import de.woock.ddd.stattauto.server.fuhrpark.entity.Auswahlkriterien;
@@ -126,12 +127,12 @@ public class SelectionPanel  extends GridPane {
 			if (kuerzel != null && !kuerzel.isEmpty()) {
 				List<Integer> fahrzeugIds = service.fahrzeugIdsFuerStationsKuerzel(kuerzel);
 				System.out.println(fahrzeugIds);
-				List<List<de.woock.ddd.stattauto.auslastung.util.Zeitraum>> alleBelegungen = new ArrayList<>();
+				List<List<Belegung>> alleBelegungen = new ArrayList<>();
 				for (Integer fahrzeugId : fahrzeugIds) {
-					List<de.woock.ddd.stattauto.auslastung.util.Zeitraum> belegungen = new ArrayList<>();
+					List<Belegung> belegungen = new ArrayList<>();
 					List<Zeitraum> zeitraeume = service.reservierungenFuerId(fahrzeugId);
 					for (Zeitraum zeitraum : zeitraeume) {
-						belegungen.add(new de.woock.ddd.stattauto.auslastung.util.Zeitraum(zeitraum.getStartZeit(), zeitraum.getEndZeit()));
+						belegungen.add(new Belegung(zeitraum.getStartZeit(), zeitraum.getEndZeit()));
 					}
 					alleBelegungen.add(belegungen);
 				}
